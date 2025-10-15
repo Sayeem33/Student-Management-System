@@ -21,10 +21,10 @@ use App\Http\Controllers\AdminController;
 |
 */
 
-// Redirect root to login page
+// Welcome page (available for both logged in and guest users)
 Route::get('/', function () {
-    return redirect()->route('login');
-});
+    return view('welcome');
+})->name('welcome');
 
 // Routes accessible only after login and for admin
 Route::middleware(['auth'])->group(function () {
@@ -34,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', function () {
-        return view('layout'); // your main layout/dashboard page
+        return view('dashboard');
     })->name('dashboard');
 
     // Profile routes
