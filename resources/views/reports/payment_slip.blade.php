@@ -28,8 +28,14 @@
             <td>{{ $payment->enrollment->batch->name ?? 'N/A' }}</td>
         </tr>
         <tr>
-            <th>Course</th>
-            <td>{{ $payment->enrollment->batch->course->name ?? 'N/A' }}</td>
+            <th>Courses</th>
+            <td>
+                @if($payment->enrollment->batch && $payment->enrollment->batch->courses->count() > 0)
+                    {{ $payment->enrollment->batch->courses->pluck('name')->join(', ') }}
+                @else
+                    N/A
+                @endif
+            </td>
         </tr>
         <tr>
             <th>Amount</th>

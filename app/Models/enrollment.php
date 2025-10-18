@@ -5,14 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class enrollment extends Model
+class Enrollment extends Model
 {
+    use HasFactory;
 
-     protected $table = 'enrollments';
+    protected $table = 'enrollments';
     protected $primaryKey = 'id';
     protected $fillable = ['enroll_no', 'batch_id', 'student_id', 'join_date', 'fee'];
-    
-    use HasFactory;
 
     public function batch()
     {

@@ -15,11 +15,11 @@ class batchcontroller extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-    $batches = Batch::with('course')->get();
-    $courses = Course::pluck('name', 'id');
-    return view('batches.index', compact('batches', 'courses'));
-}
+    {
+        $batches = Batch::with('courses')->get();
+        $courses = Course::pluck('name', 'id');
+        return view('batches.index', compact('batches', 'courses'));
+    }
 
 
     /**
@@ -28,7 +28,7 @@ class batchcontroller extends Controller
     public function create()
     {
         $courses = Course::pluck('name', 'id');
-        return view('batch.create', compact('courses'));
+        return view('batches.create', compact('courses'));
     
         // return view('batch.create');
     }
@@ -40,14 +40,22 @@ class batchcontroller extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'course_id' => 'required',
+            'course_ids' => 'required|array|min:1',
+            'course_ids.*' => 'exists:courses,id',
             'start_date' => 'required|date',
         ]);
 
-        Batch::create($request->all());
+        // Create the batch
+        $batch = Batch::create([
+            'name' => $request->name,
+            'start_date' => $request->start_date,
+        ]);
+
+        // Attach selected courses to the batch
+        $batch->courses()->attach($request->course_ids);
 
         return redirect()->route('batches.index')
-                         ->with('success', 'Batch created successfully.');
+                         ->with('success', 'Batch created successfully with selected courses.');
     }
 
     /**
@@ -55,19 +63,23 @@ class batchcontroller extends Controller
      */
     public function show(string $id)
     {
-        $batch = Batch::find($id);
+        $batch = Batch::with('courses')->findOrFail($id);
         return view('batches.show', compact('batch'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-   public function edit($id)
-{
-    $batch = Batch::findOrFail($id);
-    $courses = Course::pluck('name', 'id'); // Pass courses to the view
-    return view('batches.edit', compact('batch', 'courses'));
-}
+    public function edit($id)
+    {
+        $batch = Batch::with('courses')->findOrFail($id);
+        $courses = Course::pluck('name', 'id');
+        
+        // Get enrolled course IDs
+        $enrolledCourseIds = $batch->courses->pluck('id')->toArray();
+        
+        return view('batches.edit', compact('batch', 'courses', 'enrolledCourseIds'));
+    }
 
     /**
      * Update the specified resource in storage.
@@ -76,15 +88,24 @@ class batchcontroller extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'course_id' => 'required',
+            'course_ids' => 'required|array|min:1',
+            'course_ids.*' => 'exists:courses,id',
             'start_date' => 'required|date',
         ]);
 
-        $batch = Batch::find($id);
-        $batch->update($request->all());
+        $batch = Batch::findOrFail($id);
+        
+        // Update batch basic info
+        $batch->update([
+            'name' => $request->name,
+            'start_date' => $request->start_date,
+        ]);
+
+        // Sync courses (removes old ones, adds new ones)
+        $batch->courses()->sync($request->course_ids);
 
         return redirect()->route('batches.index')
-                         ->with('success', 'Batch updated successfully.');
+                         ->with('success', 'Batch updated successfully with selected courses.');
     }
 
     /**
@@ -92,7 +113,7 @@ class batchcontroller extends Controller
      */
     public function destroy(string $id)
     {
-        $batch = Batch::find($id);
+        $batch = Batch::findOrFail($id);
         $batch->delete();
 
         return redirect()->route('batches.index')

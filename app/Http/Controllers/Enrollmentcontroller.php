@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\HTTp\RedirectResponse;
 use Illuminate\HTTp\Response;
-use App\Models\enrollment;
+use App\Models\Enrollment;
 use App\Models\Batch;
 use App\Models\Student;
 use Illuminate\View\View;
@@ -46,7 +46,7 @@ public function index()
             'fee' => 'required|numeric',
         ]);
 
-        enrollment::create($request->all());
+        Enrollment::create($request->all());
 
         return redirect()->route('enrollments.index')
                          ->with('success', 'Enrollment created successfully.');
@@ -57,7 +57,7 @@ public function index()
      */
     public function show(string $id)
     {
-        $enrollment = enrollment::find($id);
+        $enrollment = Enrollment::with(['batch', 'student'])->findOrFail($id);
         return view('enrollments.show', compact('enrollment'));
     }
 
@@ -85,7 +85,7 @@ public function index()
             'fee' => 'required|numeric',
         ]);
 
-        $enrollment = enrollment::find($id);
+        $enrollment = Enrollment::findOrFail($id);
         $enrollment->update($request->all());
 
         return redirect()->route('enrollments.index')
@@ -97,7 +97,7 @@ public function index()
      */
     public function destroy(string $id)
     {
-        $enrollment = enrollment::find($id);
+        $enrollment = Enrollment::findOrFail($id);
         $enrollment->delete();
 
         return redirect()->route('enrollments.index')

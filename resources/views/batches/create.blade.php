@@ -4,6 +4,16 @@
 <div class="container mt-4">
     <h2>Add New Batch</h2>
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{ route('batches.store') }}" method="POST">
         @csrf
 
@@ -13,14 +23,13 @@
         </div>
 
         <div class="mb-3">
-            <label>Course</label>
-
-            <select name="course_id" class="form-control" required>
-                <option value="">Select Course</option>
+            <label>Courses (Select Multiple)</label>
+            <select name="course_ids[]" class="form-control" multiple required style="height: 150px;">
                 @foreach($courses as $id => $name)
-                    <option value="{{ $id }}">{{ $name }}</option> <!-- ID is the value -->
+                    <option value="{{ $id }}">{{ $name }}</option>
                 @endforeach
             </select>
+            <small class="form-text text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select multiple courses</small>
         </div>
 
         <div class="mb-3">

@@ -7,6 +7,22 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <div class="form-area">
                 <form method="POST" action="{{ route('batches.store') }}">
                     @csrf
@@ -16,15 +32,15 @@
                             <input type="text" class="form-control" name="name" value="{{ old('name') }}" required>
                         </div>
                         <div class="col-md-6">
-                            <label>Course</label>
-                            <select name="course_id" class="form-control" required>
-                                <option value="">-- Select Course --</option>
+                            <label>Courses (Select Multiple)</label>
+                            <select name="course_ids[]" class="form-control" multiple required style="height: 100px;">
                                 @foreach($courses as $id => $course_name)
-                                    <option value="{{ $id }}" {{ old('course_id') == $id ? 'selected' : '' }}>
+                                    <option value="{{ $id }}" {{ (is_array(old('course_ids')) && in_array($id, old('course_ids'))) ? 'selected' : '' }}>
                                         {{ $course_name }}
                                     </option>
                                 @endforeach
                             </select>
+                            <small class="form-text text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select multiple courses</small>
                         </div>
                     </div>
 
@@ -58,7 +74,15 @@
                     <tr>
                         <td>{{ ++$key }}</td>
                         <td>{{ $batch->name }}</td>
-                        <td>{{ $batch->course->name ?? 'N/A' }}</td>
+                        <td>
+                            @if($batch->courses && $batch->courses->count() > 0)
+                                @foreach($batch->courses as $course)
+                                    <span class="badge bg-info">{{ $course->name }}</span>
+                                @endforeach
+                            @else
+                                <span class="text-muted">No courses</span>
+                            @endif
+                        </td>
                         <td>{{ $batch->start_date }}</td>
                         <td>
                             <a href="{{ route('batches.show', $batch->id) }}">

@@ -10,8 +10,8 @@ class ReportController extends Controller
 {
     public function printSlip($id)
     {
-        // Load payment with enrollment, student, batch, and course
-        $payment = Payment::with('enrollment.student', 'enrollment.batch.course')->findOrFail($id);
+        // Load payment with enrollment, student, batch, and courses
+        $payment = Payment::with('enrollment.student', 'enrollment.batch.courses')->findOrFail($id);
 
         // Generate PDF from Blade view
         $pdf = Pdf::loadView('reports.payment_slip', compact('payment'));

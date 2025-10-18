@@ -11,10 +11,14 @@ class Batch extends Model
 
     protected $table = 'batches';
     protected $primaryKey = 'id';
-    protected $fillable = ['name', 'course_id', 'start_date'];
+    protected $fillable = ['name', 'start_date'];
 
-    public function course()
+    /**
+     * Many-to-many relationship with courses
+     * A batch can have multiple courses
+     */
+    public function courses()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsToMany(Course::class, 'batch_course');
     }
 }
