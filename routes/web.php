@@ -31,6 +31,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Admin panel
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::post('/admin/make-admin/{id}', [AdminController::class, 'makeAdmin'])->name('admin.make-admin');
 
     // Dashboard
     Route::get('/dashboard', function () {
@@ -40,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Student Management CRUD
@@ -50,6 +52,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('enrollments', Enrollmentcontroller::class);
     Route::resource('payments', Paymentcontroller::class);
     Route::resource('reports', Reportcontroller::class);
+
+    // Get enrollment fee for payment
+    Route::get('/api/enrollment/{id}/fee', [Enrollmentcontroller::class, 'getFee'])->name('enrollment.fee');
 
     // Payment slip PDF
     Route::get('/payments/{id}/slip', [ReportController::class, 'printSlip'])->name('payments.print');

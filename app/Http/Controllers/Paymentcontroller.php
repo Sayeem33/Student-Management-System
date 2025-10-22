@@ -34,7 +34,7 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'enrollment_id' => 'required|exists:enrollments,id',
+            'enrollment_id' => 'required|exists:enrollments,id|unique:payments,enrollment_id',
             'amount' => 'required|numeric',
             'paid_date' => 'required|date',
         ]);
@@ -70,7 +70,7 @@ class PaymentController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'enrollment_id' => 'required|exists:enrollments,id',
+            'enrollment_id' => 'required|exists:enrollments,id|unique:payments,enrollment_id,' . $id,
             'amount' => 'required|numeric',
             'paid_date' => 'required|date',
         ]);

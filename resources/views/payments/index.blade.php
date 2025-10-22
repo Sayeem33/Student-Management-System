@@ -7,18 +7,35 @@
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <div class="form-area">
                 <form method="POST" action="{{ route('payments.store') }}">
                     @csrf
                     <div class="row">
                         <div class="col-md-6">
                             <label>Enrollment No</label>
-                            <select name="enrollment_id" class="form-control" required>
+                            <select name="enrollment_id" id="enrollment_id" class="form-control" required>
                                 <option value="">-- Select Enrollment --</option>
                                 @foreach($enrollments as $id => $enroll_no)
                                     <option value="{{ $id }}">{{ $enroll_no }}</option>
                                 @endforeach
                             </select>
+                            <small class="text-muted" id="enrollment_info"></small>
                         </div>
                         <div class="col-md-6">
                             <label>Paid Date</label>
@@ -27,8 +44,9 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-12">
-                            <label>Amount</label>
-                            <input type="number" class="form-control" name="amount" required>
+                            <label>Amount (Auto-loaded from Enrollment Fee)</label>
+                            <input type="number" class="form-control" id="amount" name="amount" readonly required style="background-color: #e9ecef;">
+                            <small class="text-muted">Amount is automatically set based on the enrollment fee</small>
                         </div>
                     </div>
                     <div class="row">
@@ -87,4 +105,35 @@
     background-color:#b3e5fc;
 }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const enrollmentSelect = document.getElementById('enrollment_id');
+    const amountInput = document.getElementById('amount');
+    const enrollmentInfo = document.getElementById('enrollment_info');
+
+    enrollmentSelect.addEventListener('change', function() {
+        const enrollmentId = this.value;
+        
+        if (enrollmentId) {
+            // Fetch enrollment fee via AJAX
+            fetch(`/api/enrollment/${enrollmentId}/fee`)
+                .then(response => response.json())
+                .then(data => {
+                    amountInput.value = data.fee;
+                    enrollmentInfo.innerHTML = `<i class="fas fa-info-circle"></i> Student: ${data.student_name} | Batch: ${data.batch_name}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching enrollment fee:', error);
+                    alert('Error loading enrollment details. Please try again.');
+                });
+        } else {
+            amountInput.value = '';
+            enrollmentInfo.innerHTML = '';
+        }
+    });
+});
+</script>
 @endpush

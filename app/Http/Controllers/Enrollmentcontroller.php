@@ -39,7 +39,7 @@ public function index()
     public function store(Request $request)
     {
         $request->validate([
-            'enroll_no' => 'required',
+            'enroll_no' => 'required|unique:enrollments,enroll_no',
             'batch_id' => 'required',
             'student_id' => 'required',
             'join_date' => 'required|date',
@@ -78,7 +78,7 @@ public function index()
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'enroll_no' => 'required',
+            'enroll_no' => 'required|unique:enrollments,enroll_no,' . $id,
             'batch_id' => 'required',
             'student_id' => 'required',
             'join_date' => 'required|date',
@@ -102,5 +102,19 @@ public function index()
 
         return redirect()->route('enrollments.index')
                          ->with('success', 'Enrollment deleted successfully.');
+    }
+
+    /**
+     * Get enrollment fee for payment auto-fill
+     */
+    public function getFee($id)
+    {
+        $enrollment = Enrollment::findOrFail($id);
+        return response()->json([
+            'fee' => $enrollment->fee,
+            'enroll_no' => $enrollment->enroll_no,
+            'student_name' => $enrollment->student->name ?? 'N/A',
+            'batch_name' => $enrollment->batch->name ?? 'N/A'
+        ]);
     }
 }

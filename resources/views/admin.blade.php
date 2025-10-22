@@ -1,154 +1,136 @@
 @extends('layout')
 
-@section('title', 'Admin Panel - User Management')
-@section('page-title', 'Admin Panel')
-
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="mb-0">
-                    <i class="fas fa-users me-2"></i>
-                    User Management
-                </h4>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th><i class="fas fa-hashtag me-1"></i>ID</th>
-                                <th><i class="fas fa-user me-1"></i>Name</th>
-                                <th><i class="fas fa-envelope me-1"></i>Email</th>
-                                <th><i class="fas fa-crown me-1"></i>Admin Status</th>
-                                <th><i class="fas fa-calendar me-1"></i>Created</th>
-                                <th><i class="fas fa-cogs me-1"></i>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($users as $user)
-                            <tr>
-                                <td>
-                                    <span class="badge bg-primary">#{{ $user->id }}</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="user-avatar me-3" style="width: 35px; height: 35px; font-size: 0.875rem;">
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold">{{ $user->name }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="text-muted">{{ $user->email }}</span>
-                                </td>
-                                <td>
-                                    @if($user->is_admin)
-                                        <span class="badge bg-warning text-dark">
-                                            <i class="fas fa-crown me-1"></i>
-                                            Admin
-                                        </span>
-                                    @else
-                                        <span class="badge bg-secondary">
-                                            <i class="fas fa-user me-1"></i>
-                                            User
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <small class="text-muted">
-                                        {{ $user->created_at->format('M d, Y') }}
-                                    </small>
-                                </td>
-                                <td>
-                                    @if($user->is_admin)
-                                        <button class="btn btn-sm btn-outline-warning" disabled>
-                                            <i class="fas fa-crown me-1"></i>
-                                            Admin
-                                        </button>
-                                    @else
-                                        <form method="POST" action="#" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-success">
-                                                <i class="fas fa-user-shield me-1"></i>
-                                                Make Admin
-                                            </button>
-                                        </form>
-                                    @endif
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-4">
-                                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                                    <h5 class="text-muted">No users found</h5>
-                                    <p class="text-muted mb-0">There are no users in the system yet.</p>
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+<div class="container">
+    <h3 align="center" class="mt-5">Admin Panel - User Management</h3>
+
+    <div class="row">
+        <div class="col-md-12">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-                
-                @if($users->count() > 0)
-                    <div class="mt-4">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    Total Users: <strong>{{ $users->count() }}</strong>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-crown me-2"></i>
-                                    Admin Users: <strong>{{ $users->where('is_admin', 1)->count() }}</strong>
-                                </div>
-                            </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            <table class="table mt-5 table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th><i class="fas fa-hashtag me-1"></i>#</th>
+                        <th><i class="fas fa-user me-1"></i>Name</th>
+                        <th><i class="fas fa-envelope me-1"></i>Email</th>
+                        <th><i class="fas fa-crown me-1"></i>Role</th>
+                        <th><i class="fas fa-calendar me-1"></i>Joined</th>
+                        <th><i class="fas fa-cogs me-1"></i>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tbody>
+                    @forelse($users as $key => $user)
+                    <tr>
+                        <td>{{ ++$key }}</td>
+                        <td>
+                            <i class="fas fa-user-circle me-2 text-primary"></i>
+                            <strong>{{ $user->name }}</strong>
+                        </td>
+                        <td>{{ $user->email }}</td>
+                        <td>
+                            @if($user->is_admin)
+                                <span class="badge bg-warning text-dark">
+                                    <i class="fas fa-crown me-1"></i>Admin
+                                </span>
+                            @else
+                                <span class="badge bg-secondary">
+                                    <i class="fas fa-user me-1"></i>User
+                                </span>
+                            @endif
+                        </td>
+                        <td>{{ $user->created_at->format('M d, Y') }}</td>
+                        <td>
+                            @if($user->is_admin)
+                                <button class="btn btn-sm btn-outline-warning" disabled>
+                                    <i class="fas fa-crown me-1"></i>Admin
+                                </button>
+                            @else
+                                <form method="POST" action="{{ route('admin.make-admin', $user->id) }}" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-success" 
+                                            onclick="return confirm('Are you sure you want to make this user an admin?')">
+                                        <i class="fas fa-user-shield me-1"></i>Make Admin
+                                    </button>
+                                </form>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <i class="fas fa-users fa-3x text-muted mb-3 d-block"></i>
+                            <h5 class="text-muted">No users found</h5>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+            <!-- Statistics Cards -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card text-center" style="background-color: #e3f2fd;">
+                        <div class="card-body">
+                            <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                            <h5>Total Users</h5>
+                            <h3 class="text-primary">{{ $users->count() }}</h3>
                         </div>
                     </div>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card text-center">
-            <div class="card-body">
-                <div class="display-6 text-primary mb-2">
-                    <i class="fas fa-users"></i>
                 </div>
-                <h5>Total Users</h5>
-                <h3 class="text-primary">{{ $users->count() }}</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card text-center">
-            <div class="card-body">
-                <div class="display-6 text-warning mb-2">
-                    <i class="fas fa-crown"></i>
+                <div class="col-md-4">
+                    <div class="card text-center" style="background-color: #fff3cd;">
+                        <div class="card-body">
+                            <i class="fas fa-crown fa-2x text-warning mb-2"></i>
+                            <h5>Administrators</h5>
+                            <h3 class="text-warning">{{ $users->where('is_admin', 1)->count() }}</h3>
+                        </div>
+                    </div>
                 </div>
-                <h5>Administrators</h5>
-                <h3 class="text-warning">{{ $users->where('is_admin', 1)->count() }}</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card text-center">
-            <div class="card-body">
-                <div class="display-6 text-info mb-2">
-                    <i class="fas fa-user-graduate"></i>
+                <div class="col-md-4">
+                    <div class="card text-center" style="background-color: #d1ecf1;">
+                        <div class="card-body">
+                            <i class="fas fa-user-graduate fa-2x text-info mb-2"></i>
+                            <h5>Regular Users</h5>
+                            <h3 class="text-info">{{ $users->where('is_admin', 0)->count() }}</h3>
+                        </div>
+                    </div>
                 </div>
-                <h5>Regular Users</h5>
-                <h3 class="text-info">{{ $users->where('is_admin', 0)->count() }}</h3>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('css')
+<style>
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+}
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-2px);
+}
+</style>
+@endpush
