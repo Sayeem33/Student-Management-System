@@ -51,7 +51,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12 mt-3">
-                            <input type="submit" class="btn btn-primary" value="Register">
+                            <input type="submit" class="btn btn-primary" value="Done">
                         </div>
                     </div>
                 </form>

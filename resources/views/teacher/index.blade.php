@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h3 align="center" class="mt-5">teacher Management</h3>
+    <h3 align="center" class="mt-5">Teacher Management</h3>
 
     <div class="row">
         <div class="col-md-2"></div>
@@ -12,7 +12,7 @@
                     @csrf
                     <div class="row">
                         <div class="col-md-6">
-                            <label>teacher Name</label>
+                            <label>Teacher Name</label>
                             <input type="text" class="form-control" name="name">
                         </div>
                         <div class="col-md-6">
@@ -38,7 +38,7 @@
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>teacher Name</th>
+                    <th>Teacher Name</th>
                     <th>Address</th>
                     <th>Mobile</th>
                     <th>Action</th>

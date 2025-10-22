@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('batches', function (Blueprint $table) {
-            // First, drop the foreign key constraint if it exists
+        // Check if column exists before trying to drop it
+        if (Schema::hasColumn('batches', 'course_id')) {
+            // Use raw SQL to handle foreign key removal more gracefully
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+            
             try {
-                $table->dropForeign(['course_id']);
+                DB::statement('ALTER TABLE batches DROP COLUMN course_id');
             } catch (\Exception $e) {
-                // Foreign key might not exist, continue
+                // Column might already be removed
             }
             
-            // Then drop the column if it exists
-            if (Schema::hasColumn('batches', 'course_id')) {
-                $table->dropColumn('course_id');
-            }
-        });
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        }
     }
 
     /**
@@ -31,9 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('batches', function (Blueprint $table) {
-            // Re-add the column if rolling back
-            $table->unsignedBigInteger('course_id')->nullable();
-        });
+        // Don't re-add the column as it's deprecated
     }
 };

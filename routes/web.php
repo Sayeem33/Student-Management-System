@@ -26,12 +26,14 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-// Routes accessible only after login and for admin
-Route::middleware(['auth'])->group(function () {
-
-    // Admin panel
+// Admin panel routes (requires login AND admin status)
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::post('/admin/make-admin/{id}', [AdminController::class, 'makeAdmin'])->name('admin.make-admin');
+});
+
+// Routes accessible only after login
+Route::middleware(['auth'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', function () {

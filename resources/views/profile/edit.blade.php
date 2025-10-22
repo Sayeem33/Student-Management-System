@@ -1,8 +1,24 @@
 @extends('layout')
 
 @section('content')
+<!-- Version: 2.0 - Password Update Fixed -->
 <div class="container mt-4">
     <h2 class="mb-4">Profile Management</h2>
+
+    {{-- Success Messages --}}
+    @if (session('status') === 'profile-updated')
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> Profile updated successfully!
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if (session('status') === 'password-updated')
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> Password updated successfully!
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
     {{-- Update Profile Info --}}
     <div class="card mb-4">
@@ -39,8 +55,10 @@
     <div class="card mb-4">
         <div class="card-header bg-warning text-dark">Change Password</div>
         <div class="card-body">
+            <!-- UPDATED: {{ now() }} - Password form with PUT method -->
             <form method="POST" action="{{ route('password.update') }}">
                 @csrf
+                @method('PUT')
 
                 <div class="mb-3">
                     <label for="current_password" class="form-label">Current Password</label>

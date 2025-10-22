@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h3 align="center" class="mt-5">courses Management</h3>
+    <h3 align="center" class="mt-5">Courses Management</h3>
 
     <div class="row">
         <div class="col-md-2"></div>
@@ -12,17 +12,17 @@
                     @csrf
                     <div class="row">
                         <div class="col-md-6">
-                            <label>courses Name</label>
+                            <label>Courses Name</label>
                             <input type="text" class="form-control" name="name">
                         </div>
                         <div class="col-md-6">
-                            <label>syllabus</label>
+                            <label>Syllabus</label>
                             <input type="text" class="form-control" name="syllabus">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <label>duration</label>
+                            <label>Duration</label>
                             <input type="text" class="form-control" name="duration">
                         </div>
                     </div>
@@ -38,9 +38,9 @@
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>courses Name</th>
-                    <th>syllabus</th>
-                    <th>duration</th>
+                    <th>Courses Name</th>
+                    <th>Syllabus</th>
+                    <th>Duration</th>
                     <th>Action</th>
                   </tr>
                 </thead>
